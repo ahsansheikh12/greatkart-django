@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 
+from ctypes import cast
+from email.policy import default
 from pathlib import Path
-
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,10 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^u_ye-_x6h@k++upy(v6)k+4)sd$)js2b6q4-d29zog71h)$js'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG',default=True,cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -44,6 +46,8 @@ INSTALLED_APPS = [
     'store',
     'carts',
     'orders',
+    'admin_honeypot',
+    'contact',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +58,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_session_timeout.middleware.SessionTimeoutMiddleware',
 ]
+
+SESSION_EXPIRE_SECONDS = 3600  # 1 min
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+SESSION_TIMEOUT_REDIRECT = 'accounts/login'
 
 ROOT_URLCONF = 'greatkart.urls'
 
@@ -148,13 +157,13 @@ MESSAGE_TAGS = {
 
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST= 'smtp.gmail.com'
-EMAIL_PORT= 587
-EMAIL_HOST_USER= 'ahsansheikh032@gmail.com'
-EMAIL_HOST_PASSWORD= 'favczntnitmlcioc'
-EMAIL_USE_TLS=True
-ACCOUNT_ACTIVATION_DAYS = 1
-REGISTRATION_AUTO_LOGIN = True
-SITE_ID = 1
-LOGIN_REDIRECT_URL = 'home'
+EMAIL_BACKEND = config('EMAIL_BACKEND')
+EMAIL_HOST= config('EMAIL_HOST')
+EMAIL_PORT= config('EMAIL_PORT',cast=int)
+EMAIL_HOST_USER= config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD= config('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS=config('EMAIL_USE_TLS',cast=bool)
+ACCOUNT_ACTIVATION_DAYS = config('ACCOUNT_ACTIVATION_DAYS')
+REGISTRATION_AUTO_LOGIN = config('REGISTRATION_AUTO_LOGIN',cast=bool)
+SITE_ID = config('SITE_ID')
+LOGIN_REDIRECT_URL = config('LOGIN_REDIRECT_URL')

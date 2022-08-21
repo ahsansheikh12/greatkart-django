@@ -1,0 +1,50 @@
+<!DOCTYPE html> {% extends 'base.html' %} {% load static %} {% block content %}
+<section class="section-content padding-y bg">
+    <div class="container">
+
+        <!-- ============================ COMPONENT 1 ================================= -->
+
+        <div class="row">
+            <aside class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title mt-4">Contact Us</h4>
+                        <form action="{% url 'contact' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <label for="">Your Name</label>
+                                    <input type="text" name="name" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <label for="">Your Email</label>
+                                    <input type="email" name="email" class="form-control" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <label for="">Message Note</label>
+                                    <textarea name="messagenote" class="form-control" rows="5" required></textarea>
+                                </div>
+                            </div>
+                            <input type="submit" value="Submit" class="btn btn-outline-warning btn-lg">
+                        </form>
+                    </div>
+                </div>
+            </aside>
+            <!-- col.// -->
+
+        </div>
+
+        <!-- row.// -->
+        <!-- ============================ COMPONENT 1 END .// ================================= -->
+
+    </div>
+    <!-- container .//  -->
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+
+{% endblock %}

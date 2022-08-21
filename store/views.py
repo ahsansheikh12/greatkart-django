@@ -10,7 +10,7 @@ from carts.models import CartItem
 from carts.views import _cart_id, cart
 from django.shortcuts import redirect
 from category.models import Category
-from .models import Product, ReviewRating
+from .models import Product, ReviewRating,ProductGallery
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from django.db.models import Q
 from orders.models import OrderProduct
@@ -20,26 +20,28 @@ from .forms import ReviewForm
 def store(request,category_slug=None):
     categories=None
     products=None
-
+    
     if category_slug != None:
         categories=get_object_or_404(Category,slug=category_slug)
         products=Product.objects.filter(category=categories,is_available=True)
-        paginator=Paginator(products,4)
+        paginator=Paginator(products,6)
         page=request.GET.get('page')
         paged_products=paginator.get_page(page)
         product_count=products.count()
     else:
-       products=Product.objects.all().filter(is_available=True).order_by('id')
-       paginator=Paginator(products,4)
+       products=Product.objects.all().filter(is_available=True).order_by('-created_date')
+       paginator=Paginator(products,6)
        page=request.GET.get('page')
        paged_products=paginator.get_page(page)
        product_count=products.count()
-            
     context={
         'products':paged_products,
         'product_count':product_count,
-    }
+        }
+        
     return render(request,'store/store.html',context)
+
+ 
 
 def product_details(request,category_slug,product_slug):
     try:
@@ -54,15 +56,18 @@ def product_details(request,category_slug,product_slug):
         except OrderProduct.DoesNotExist:
             orderproduct=None 
     else:
-            orderproduct=None 
+        orderproduct=None
 
     reviews=ReviewRating.objects.filter(product_id=single_product.id,status=True)
+
+    product_gallery=ProductGallery.objects.filter(product_id=single_product.id)
 
     context={
         'single_product' : single_product,
         'in_cart':in_cart,
         'orderproduct': orderproduct,
         'reviews': reviews,
+        'product_gallery': product_gallery,
     }    
     return render(request,'store/product_details.html',context)    
 
@@ -104,3 +109,4 @@ def submit_review(request,product_id):
                 messages.success(request,"Your Review Has Been Submitted")
                 return redirect(url)
 
+    
